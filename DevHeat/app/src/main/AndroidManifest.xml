@@ -25,6 +25,10 @@
             android:name =".sign_in"/>
         <activity
             android:name =".template"/>
+        <activity
+            android:name=".new_user"/>
+        <activity
+            android:name=".menu"/>
 
     </application>
 
