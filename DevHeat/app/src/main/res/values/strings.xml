@@ -1,3 +1,14 @@
 <resources>
     <string name="app_name">DevHeat</string>
+
+    <string-array name="arrayMKTypes">
+        <item>1st level Heading</item>
+        <item>2nd level heading</item>
+        <item>3rd level heading</item>
+        <item>Link</item>
+        <item>Text + link</item>
+        <item>HR</item>
+        <item>!Note text</item>
+    </string-array>
+
 </resources>
