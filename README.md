@@ -18,7 +18,7 @@ When you click on the username, his name and his password are added to the 'logi
 
 You can create new users with a name and a password, and the users will be inserted into the SQLite database.
 
-## login
+## Login
 
 Gets the extras setted on 'MainActivity' and sets the TextView welcoming the user. If the Username and his password are correct, the next activity will start.
 
