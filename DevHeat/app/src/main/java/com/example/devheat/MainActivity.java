@@ -1,9 +1,11 @@
 package com.example.devheat;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
 
 import androidx.activity.EdgeToEdge;
@@ -14,17 +16,21 @@ import androidx.core.view.WindowInsetsCompat;
 
 import com.example.devheat.database.DatabaseHelper;
 
-import java.util.Collections;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
     private Button btnCreateU, btnMenu;
+    private ImageButton menuMain;
     private LinearLayout layout;
     private DatabaseHelper dbHelper;
-
+    private boolean isDarkMode;
+    private SharedPreferences sharedPreferences;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        //sharedPreferences = getSharedPreferences("ThemePrefs", MODE_PRIVATE);
+        //isDarkMode = sharedPreferences.getBoolean("isDarkMode", false);
+        //setTheme(isDarkMode ? R.style.Theme_DevHeat_Dark : R.style.Theme_DevHeat_Light);
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_main);
@@ -34,15 +40,14 @@ public class MainActivity extends AppCompatActivity {
             return insets;
         });
 
-        btnMenu = findViewById(R.id.menuMain);
-        btnMenu.setOnClickListener(new View.OnClickListener(){
 
-            @Override
-            public void onClick(View v){
-                Intent intent = new Intent(MainActivity.this, menu.class);
-                startActivity(intent);
-            }
+
+        menuMain = findViewById(R.id.menuMain);
+        ((View) menuMain).setOnClickListener(v -> {
+            Intent intent = new Intent(MainActivity.this, menu.class);
+            startActivity(intent);
         });
+
 
 
         btnCreateU = findViewById(R.id.btnCreateU);

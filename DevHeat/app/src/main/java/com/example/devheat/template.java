@@ -3,11 +3,14 @@ package com.example.devheat;
 import android.content.ClipData;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -29,13 +32,15 @@ import androidx.appcompat.app.AlertDialog;
 import android.content.ClipboardManager;
 import android.content.ClipData;
 
+
 public class template extends AppCompatActivity {
 
     private Spinner spinnerMK;
     private Button btnAddCathegory, buttonClipboard, btnClearOptions, btnSave;
     private LinearLayout containerLayout;
     private List<Spinner> spinners = new ArrayList<>();
-
+    private List<EditText> editTexts = new ArrayList<>();
+    private ItemSelectedListener ist = new ItemSelectedListener();
     private AlertDialog.Builder ADbuilder;
 
     @Override
@@ -56,10 +61,10 @@ public class template extends AppCompatActivity {
                 R.array.arrayMKTypes,
                 android.R.layout.simple_spinner_item);
         spinnerMK.setAdapter(adapter);
+        spinnerMK.setOnItemSelectedListener(ist);
 
         containerLayout = findViewById(R.id.containerLayout);
         btnAddCathegory = findViewById(R.id.btnAddCathegory);
-
 
         btnAddCathegory.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
@@ -67,18 +72,21 @@ public class template extends AppCompatActivity {
                 Spinner spinner = new Spinner(template.this);
                 spinner.setAdapter(adapter);
 
-                LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
-                        LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams paramsS = new LinearLayout.LayoutParams(
+                        LinearLayout.LayoutParams.WRAP_CONTENT,
                         LinearLayout.LayoutParams.WRAP_CONTENT
                 );
-                params.setMargins(0, 0, 0, 16);
-                spinner.setLayoutParams(params);
+                paramsS.setMargins(0, 0, 0, 16);
+                spinner.setLayoutParams(paramsS);
                 spinner.setPadding(8, 8, 8, 8);
+                spinner.setOnItemSelectedListener(ist);
 
                 containerLayout.addView(spinner);
+                //containerLayout.addView(editText);
                 spinners.add(spinner);
             }
         });
+
         buttonClipboard = findViewById(R.id.buttonClipboard);
         buttonClipboard.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -99,7 +107,6 @@ public class template extends AppCompatActivity {
             }
         });
 
-
         ADbuilder = new AlertDialog.Builder(this);
         ADbuilder.setTitle("Ubication");
         ADbuilder.setMessage("¿Where do you want to save it?");
@@ -114,6 +121,10 @@ public class template extends AppCompatActivity {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 Toast.makeText(template.this, "Another path", Toast.LENGTH_SHORT).show();
+                Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
+                intent.addCategory(Intent.CATEGORY_OPENABLE);
+                intent.setType("*/*"); // Permite seleccionar cualquier tipo de archivo
+                startActivityForResult(intent, 123);
             }
         });
 
@@ -126,7 +137,6 @@ public class template extends AppCompatActivity {
             }
 
         });
-
     }
 
     public void saveFile(String path) {
@@ -149,12 +159,78 @@ public class template extends AppCompatActivity {
                     Toast.makeText(template.this, "Error while creating the file", Toast.LENGTH_SHORT).show();
                 }
 
-
             }
+        }
+    }
 
+
+    public class ItemSelectedListener implements AdapterView.OnItemSelectedListener {
+        @Override
+        public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+            Context context = view.getContext();
+
+            String itemSeleccionado = parent.getItemAtPosition(position).toString();
+
+            if(itemSeleccionado.equals("Text")){
+                EditText editText = new EditText(context);
+                LinearLayout.LayoutParams paramsE = new LinearLayout.LayoutParams(
+                        LinearLayout.LayoutParams.MATCH_PARENT,
+                        LinearLayout.LayoutParams.WRAP_CONTENT
+                );
+                paramsE.setMargins(0, 0, 0, 16);
+                editText.setLayoutParams(paramsE);
+                editText.setPadding(8, 8, 8, 8);
+                editText.setHint("Enter your text here");
+                editTexts.add(editText);
+                containerLayout.addView(editText);
+
+            } else if (itemSeleccionado.equals("1st level Heading")){
+                EditText editText = new EditText(context);
+                LinearLayout.LayoutParams paramsE = new LinearLayout.LayoutParams(
+                        LinearLayout.LayoutParams.MATCH_PARENT,
+                        LinearLayout.LayoutParams.WRAP_CONTENT
+                );
+                paramsE.setMargins(0, 0, 0, 16);
+                editText.setLayoutParams(paramsE);
+                editText.setPadding(8, 8, 8, 8);
+                editText.setHint("Your 1st level heading");
+                editTexts.add(editText);
+                containerLayout.addView(editText);
+
+            }else if(itemSeleccionado.equals("2nd level heading")){
+                EditText editText = new EditText(context);
+                LinearLayout.LayoutParams paramsE = new LinearLayout.LayoutParams(
+                        LinearLayout.LayoutParams.MATCH_PARENT,
+                        LinearLayout.LayoutParams.WRAP_CONTENT
+                );
+                paramsE.setMargins(0, 0, 0, 16);
+                editText.setLayoutParams(paramsE);
+                editText.setPadding(8, 8, 8, 8);
+                editText.setHint("Your 2nd level heading");
+                editTexts.add(editText);
+                containerLayout.addView(editText);
+
+            }else if(itemSeleccionado.equals("3rd level heading")){
+                EditText editText = new EditText(context);
+                LinearLayout.LayoutParams paramsE = new LinearLayout.LayoutParams(
+                        LinearLayout.LayoutParams.MATCH_PARENT,
+                        LinearLayout.LayoutParams.WRAP_CONTENT
+                );
+                paramsE.setMargins(0, 0, 0, 16);
+                editText.setLayoutParams(paramsE);
+                editText.setPadding(8, 8, 8, 8);
+                editText.setHint("Your 3rd level heading");
+                editTexts.add(editText);
+                containerLayout.addView(editText);
+            }
 
         }
 
-
+        @Override
+        public void onNothingSelected(AdapterView<?> parent) {
+            Toast.makeText(template.this, "Nothing selected", Toast.LENGTH_SHORT).show();
+        }
     }
+
 }
+

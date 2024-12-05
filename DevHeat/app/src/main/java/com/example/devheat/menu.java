@@ -1,94 +1,88 @@
 package com.example.devheat;
 
-import static android.os.Process.sendSignal;
-
-import android.content.Context;
 import android.content.SharedPreferences;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
-import android.widget.CompoundButton;
+import android.widget.ImageButton;
 import android.widget.Switch;
-import android.widget.Toast;
 
-import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
+import androidx.appcompat.app.AppCompatDelegate;
 
 import com.example.devheat.database.DatabaseHelper;
 
 public class menu extends AppCompatActivity {
-
-    Button closeMenu, deleteSP, deleteDB;
+    private SharedPreferences sharedPref;
+    private Button deleteSP, deleteDB;
+    private ImageButton closeMenu;
     private DatabaseHelper dbHelper;
     private Switch switchLM;
-
+    private boolean isDarkTheme = false;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState){
-
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        EdgeToEdge.enable(this);
+
+        // Retrieve the theme preference
+        sharedPref = getSharedPreferences("ThemePrefs", MODE_PRIVATE);
+        isDarkTheme = sharedPref.getBoolean("isDarkTheme", false);
+
+        // Set the theme before setting the content view
+        AppCompatDelegate.setDefaultNightMode(
+                isDarkTheme ? AppCompatDelegate.MODE_NIGHT_YES : AppCompatDelegate.MODE_NIGHT_NO
+        );
+
         setContentView(R.layout.menu);
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.menu), (v, insets) -> {
-            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
-            return insets;
+
+        // Initialize UI components
+        initializeUI();
+    }
+
+    private void initializeUI() {
+
+        closeMenu = findViewById(R.id.closeMenu);
+        ((View) closeMenu).setOnClickListener(v -> finish());
+
+
+
+        deleteSP = findViewById(R.id.deleteSP);
+        deleteSP.setOnClickListener(v -> {
+            // Implement delete SharedPreferences logic here
         });
 
-    closeMenu = findViewById(R.id.closeMenu);
-    closeMenu.setOnClickListener(new View.OnClickListener(){
+        dbHelper = new DatabaseHelper(this);
+        SQLiteDatabase db = dbHelper.getWritableDatabase();
+        deleteDB = findViewById(R.id.deleteDB);
+        deleteDB.setOnClickListener(v -> dbHelper.deleteDB(db));
 
-        @Override
-        public void onClick(View v){
-            finish();
-        }
+        switchLM = findViewById(R.id.switchLM);
+        switchLM.setChecked(isDarkTheme);
+        updateSwitchText();
 
-    });
-
-    deleteSP = findViewById(R.id.deleteSP);
-    deleteSP.setOnClickListener(new View.OnClickListener(){
-
-            @Override
-                public void onClick(View v){
-
-        }
-
-    });
-
-    dbHelper = new DatabaseHelper(this);
-    SQLiteDatabase db = dbHelper.getWritableDatabase();
-    deleteDB = findViewById(R.id.deleteDB);
-    deleteDB.setOnClickListener(new View.OnClickListener(){
-        @Override
-        public void onClick(View v){
-        dbHelper.deleteDB(db);
-        }
-    });
-
-    switchLM = findViewById(R.id.switchLM);
-    switchLM.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-        @Override
-        public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-            SharedPreferences sharedPref = getSharedPreferences("MyPrefs", MODE_PRIVATE);
+        switchLM.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            isDarkTheme = isChecked;
             SharedPreferences.Editor editor = sharedPref.edit();
+            editor.putBoolean("isDarkTheme", isDarkTheme);
+            editor.apply();
 
-            if (isChecked) {
-                    Toast.makeText(menu.this, "cheked", Toast.LENGTH_SHORT).show();
-                    switchLM.setText("Dark mode");
-                    editor.putBoolean("isDarkMode", true);
-                    editor.apply();
-                } else {
-                Toast.makeText(menu.this, "Uncheked", Toast.LENGTH_SHORT).show();
-                switchLM.setText("Light mode");
-                editor.putBoolean("isDarkMode", false);
-                editor.apply();
-                }
+            // Change theme without recreating the activity
+            AppCompatDelegate.setDefaultNightMode(
+                    isDarkTheme ? AppCompatDelegate.MODE_NIGHT_YES : AppCompatDelegate.MODE_NIGHT_NO
+            );
+
+            updateSwitchText();
+        });
+    }
+
+    private void updateSwitchText() {
+        if (isDarkTheme) {
+            switchLM.setText("Dark mode");
+            //Toast.makeText(this, "Checked", Toast.LENGTH_SHORT).show();
+        } else {
+            switchLM.setText("Light mode");
+            //Toast.makeText(this, "Unchecked", Toast.LENGTH_SHORT).show();
         }
-    });
-
     }
 }

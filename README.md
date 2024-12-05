@@ -27,6 +27,10 @@ Gets the extras setted on 'MainActivity' and sets the TextView welcoming the use
 It starts with one Spinner with several options to add to the Readme generatos (Titles, text, text with a link...)
 and a Button. If you click the button, it will generate another <ins>XML Spinner</ins>. You can generate countless Spinners.
 
+
+Each spinner has an 'onChangeListener'. Based on the selected option, a new EditText is added below. 
+These EditText instances are added to a list for later access to their content.
+
 3 Buttons on bottom:
 
  - bntClipoard: Saves the README into the clipboard with the ClipboardManager.
