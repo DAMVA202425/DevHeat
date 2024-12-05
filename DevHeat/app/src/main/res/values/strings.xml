@@ -1,7 +1,10 @@
 <resources>
+
     <string name="app_name">DevHeat</string>
 
     <string-array name="arrayMKTypes">
+        <item>Choose a category</item>
+        <item>Text</item>
         <item>1st level Heading</item>
         <item>2nd level heading</item>
         <item>3rd level heading</item>

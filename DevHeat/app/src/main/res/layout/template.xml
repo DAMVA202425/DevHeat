@@ -17,35 +17,37 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <Button
-        android:id="@+id/btnAddCathegory"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:text="Add another cathegory"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/spinnerMK" />
-
     <LinearLayout
         android:id="@+id/containerLayout"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_marginTop="16dp"
-        android:background="#B9C0F8"
+        android:background="#FFFFFF"
         android:orientation="vertical"
         android:padding="16dp"
+        app:layout_constraintBottom_toTopOf="@+id/btnAddCathegory"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/spinnerMK" />
+
+    <Button
+        android:id="@+id/btnAddCathegory"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="Add another cathegory    "
+        android:textAlignment="viewStart"
         app:layout_constraintBottom_toTopOf="@+id/btnClearOptions"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/btnAddCathegory" />
+        app:layout_constraintTop_toBottomOf="@+id/containerLayout" />
 
     <Button
         android:id="@+id/btnClearOptions"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="32dp"
-        android:text="Clear"
+        android:text="Clear    "
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@id/btnSave"
         app:layout_constraintStart_toStartOf="parent" />
@@ -54,7 +56,7 @@
         android:id="@+id/btnSave"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Save"
+        android:text="Save     "
         app:layout_constraintBottom_toBottomOf="@id/btnClearOptions"
         app:layout_constraintEnd_toStartOf="@id/buttonClipboard"
         app:layout_constraintStart_toEndOf="@id/btnClearOptions" />
@@ -63,9 +65,56 @@
         android:id="@+id/buttonClipboard"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Clipboard"
+        android:text="Clipboard    "
         app:layout_constraintBottom_toBottomOf="@id/btnClearOptions"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@id/btnSave" />
+
+    <ImageView
+        android:id="@+id/imageView4"
+        android:layout_width="31dp"
+        android:layout_height="28dp"
+        app:layout_constraintBottom_toBottomOf="@+id/buttonClipboard"
+        app:layout_constraintEnd_toEndOf="@+id/buttonClipboard"
+        app:layout_constraintHorizontal_bias="0.92"
+        app:layout_constraintStart_toStartOf="@+id/buttonClipboard"
+        app:layout_constraintTop_toTopOf="@+id/buttonClipboard"
+        app:layout_constraintVertical_bias="0.4"
+        app:srcCompat="@drawable/content_copy" />
+
+    <ImageView
+        android:id="@+id/imageView5"
+        android:layout_width="32dp"
+        android:layout_height="30dp"
+        app:layout_constraintBottom_toBottomOf="@+id/btnSave"
+        app:layout_constraintEnd_toEndOf="@+id/btnSave"
+        app:layout_constraintHorizontal_bias="0.842"
+        app:layout_constraintStart_toStartOf="@+id/btnSave"
+        app:layout_constraintTop_toTopOf="@+id/btnSave"
+        app:layout_constraintVertical_bias="0.444"
+        app:srcCompat="@drawable/content_save_all_outline" />
+
+    <ImageView
+        android:id="@+id/imageView6"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="@+id/btnClearOptions"
+        app:layout_constraintEnd_toEndOf="@+id/btnClearOptions"
+        app:layout_constraintHorizontal_bias="0.892"
+        app:layout_constraintStart_toStartOf="@+id/btnClearOptions"
+        app:layout_constraintTop_toTopOf="@+id/btnClearOptions"
+        app:srcCompat="@drawable/trash_can_outline" />
+
+    <ImageView
+        android:id="@+id/imageView7"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toTopOf="@+id/btnSave"
+        app:layout_constraintEnd_toEndOf="@+id/btnAddCathegory"
+        app:layout_constraintHorizontal_bias="0.968"
+        app:layout_constraintStart_toStartOf="@+id/btnAddCathegory"
+        app:layout_constraintTop_toTopOf="@+id/btnAddCathegory"
+        app:layout_constraintVertical_bias="0.437"
+        app:srcCompat="@android:drawable/ic_menu_add" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
