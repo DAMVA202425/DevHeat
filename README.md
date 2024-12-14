@@ -62,6 +62,14 @@ Once the changes are made, your GitHub account will be updated instantly, and co
 <img src="./Assets/13finishedMenu.png" alt="Imagen de perfil" style="width: 30%;">
 <img src="./Assets/14finishedSignIn.png" alt="Imagen de perfil" style="width: 30%;">
 
+Short videos:
+<video width="320" height="240" controls>
+    <source src="/Assets/1.mp4" type="video/mp4">
+</video>
+<video width="320" height="240" controls>
+    <source src="/Assets/2.mp4" type="video/mp4">
+</video>
+
 
 
 <details closed>
