@@ -7,28 +7,39 @@
     android:layout_height="match_parent"
     android:backgroundTint="#8D168DA0">
 
-    <Spinner
-        android:id="@+id/spinnerMK"
+
+    <ImageButton
+        android:id="@+id/btnMenuTemplate"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="78dp"
-        android:entries="@array/arrayMKTypes"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
 
-    <LinearLayout
-        android:id="@+id/containerLayout"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.955"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.059"
+        app:srcCompat="@drawable/menu" />
+
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_marginTop="16dp"
-        android:background="#FFFFFF"
-        android:orientation="vertical"
-        android:padding="16dp"
-        app:layout_constraintBottom_toTopOf="@+id/btnAddCathegory"
+        android:layout_height="388dp"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/spinnerMK" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.428">
+
+        <LinearLayout
+            android:id="@+id/containerLayout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="#FFFFFF"
+            android:orientation="vertical"
+            android:padding="16dp"></LinearLayout>
+
+    </ScrollView>
+
 
     <Button
         android:id="@+id/btnAddCathegory"
@@ -37,16 +48,19 @@
         android:layout_marginTop="16dp"
         android:text="Add another cathegory    "
         android:textAlignment="viewStart"
+        android:translationY="-20dp"
         app:layout_constraintBottom_toTopOf="@+id/btnClearOptions"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.417"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/containerLayout" />
+        app:layout_constraintTop_toBottomOf="@+id/containerLayout"
+        app:layout_constraintVertical_bias="1.0" />
 
     <Button
         android:id="@+id/btnClearOptions"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="32dp"
+        android:layout_marginBottom="64dp"
         android:text="Clear    "
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@id/btnSave"
@@ -80,12 +94,14 @@
         app:layout_constraintStart_toStartOf="@+id/buttonClipboard"
         app:layout_constraintTop_toTopOf="@+id/buttonClipboard"
         app:layout_constraintVertical_bias="0.4"
-        app:srcCompat="@drawable/content_copy" />
+        app:srcCompat="@drawable/content_copy"
+        app:tint="#FFFFFF" />
 
     <ImageView
         android:id="@+id/imageView5"
         android:layout_width="32dp"
         android:layout_height="30dp"
+        android:tint="#FFFFFF"
         app:layout_constraintBottom_toBottomOf="@+id/btnSave"
         app:layout_constraintEnd_toEndOf="@+id/btnSave"
         app:layout_constraintHorizontal_bias="0.842"
@@ -98,6 +114,7 @@
         android:id="@+id/imageView6"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:tint="#FFFFFF"
         app:layout_constraintBottom_toBottomOf="@+id/btnClearOptions"
         app:layout_constraintEnd_toEndOf="@+id/btnClearOptions"
         app:layout_constraintHorizontal_bias="0.892"
@@ -109,12 +126,14 @@
         android:id="@+id/imageView7"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:tint="#FFFFFF"
+        android:translationY="-10dp"
         app:layout_constraintBottom_toTopOf="@+id/btnSave"
         app:layout_constraintEnd_toEndOf="@+id/btnAddCathegory"
-        app:layout_constraintHorizontal_bias="0.968"
+        app:layout_constraintHorizontal_bias="0.95"
         app:layout_constraintStart_toStartOf="@+id/btnAddCathegory"
         app:layout_constraintTop_toTopOf="@+id/btnAddCathegory"
-        app:layout_constraintVertical_bias="0.437"
-        app:srcCompat="@android:drawable/ic_menu_add" />
+        app:layout_constraintVertical_bias="0.0"
+        app:srcCompat="@drawable/plus_circle_outline" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

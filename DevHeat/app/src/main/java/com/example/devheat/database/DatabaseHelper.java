@@ -17,22 +17,41 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-        String CREATE_TABLE = "CREATE TABLE users ("
+        String CREATE_TABLE1 = "CREATE TABLE users ("
                 + "id INTEGER PRIMARY KEY AUTOINCREMENT, "
                 + "name TEXT, "
-                + "password TEXT)";
-        db.execSQL(CREATE_TABLE);
+                + "password TEXT) ";
+        String CREATE_TABLE2 = " CREATE TABLE mdFiles ("
+                + "id INTEGER, "
+                + "mdContent TEXT);";
+
+        db.execSQL(CREATE_TABLE1);
+        db.execSQL(CREATE_TABLE2);
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         db.execSQL("DROP TABLE IF EXISTS users");
+        db.execSQL("DROP TABLE IF EXISTS mdFiles");
         onCreate(db);
     }
 
     public void deleteDB(SQLiteDatabase db){
         db.execSQL("DELETE FROM users");
+        db.execSQL("DELETE FROM mdFiles");
     }
+
+    public boolean insertMdFile(int id, String content) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues contentValues = new ContentValues();
+        contentValues.put("id", id);
+        contentValues.put("mdContent", content);
+        long result = db.insert("mdFiles", null, contentValues);
+        db.close();
+        return result != -1;  // Devuelve true si la inserción fue exitosa
+    }
+
+
 
     // Método para insertar un estudiante
     public boolean insertUser(String name, String password) {
@@ -60,6 +79,29 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 // Obtiene la contraseña del usuario desde la tercera columna (índice 2)
                 String password  = cursor.getString(0);
                 builder.append(password);
+            }
+        }
+        // Cierra el cursor para liberar recursos
+        cursor.close();
+        db.close();
+        return builder.toString();
+    }
+
+    public String getID(String name){
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.rawQuery("SELECT id FROM users where name = ?", new String[]{String.valueOf(name)});
+
+        // Crea un StringBuilder para construir la cadena de salida
+        StringBuilder builder = new StringBuilder();
+        if (cursor.getCount() == 0) {
+            // Si no hay usuarios, agrega un mensaje al StringBuilder
+            builder.append("There are no id's");
+        } else {
+            // Si hay registros, itera sobre cada uno de ellos
+            while (cursor.moveToNext()) {
+                // Obtiene la contraseña del usuario desde la tercera columna (índice 2)
+                String id  = cursor.getString(0);
+                builder.append(id);
             }
         }
         // Cierra el cursor para liberar recursos
@@ -178,6 +220,30 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.close();
         return userNames;
     }
+
+
+
+    public List<String> getAllMdContentList(int id) {
+        List<String> mdContents = new ArrayList<>();
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.rawQuery("SELECT mdContent FROM mdFiles WHERE id = ?", new String[]{String.valueOf(id)});
+
+        if (cursor.moveToFirst()) {
+            do {
+                String content = cursor.getString(0);
+                mdContents.add(content);
+            } while (cursor.moveToNext());
+        }
+
+        cursor.close();
+        db.close();
+        return mdContents;
+    }
+
+
+
+
+
 
     // Método para actualizar un estudiante
     public boolean updateStudent(int id, String newName, String newPassword) {
