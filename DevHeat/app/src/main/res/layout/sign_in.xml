@@ -53,14 +53,14 @@
         app:layout_constraintEnd_toEndOf="parent" />
 
     <ImageView
-        android:id="@+id/imageView3"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:id="@+id/ivPPsignIn"
+        android:layout_width="114dp"
+        android:layout_height="103dp"
         app:layout_constraintBottom_toTopOf="@+id/textView3"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.77"
-        tools:srcCompat="@tools:sample/avatars" />
+        tools:srcCompat="@drawable/account_circle_outline" />
 </androidx.constraintlayout.widget.ConstraintLayout>

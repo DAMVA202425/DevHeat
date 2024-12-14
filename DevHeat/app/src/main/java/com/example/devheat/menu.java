@@ -1,88 +1,156 @@
 package com.example.devheat;
 
+import android.content.Intent;
 import android.content.SharedPreferences;
-import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageButton;
-import android.widget.Switch;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.app.AppCompatDelegate;
+import androidx.core.graphics.Insets;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
 
 import com.example.devheat.database.DatabaseHelper;
+import com.example.devheat.resources.GetGitHubBio;
+import com.example.devheat.resources.GetGitHubPP;
+import com.example.devheat.resources.GetGitHubReadme;
+import com.example.devheat.resources.UpdateGitHubBio;
+import com.example.devheat.resources.UpdateGitHubReadme;
+import com.squareup.picasso.Picasso;
+import io.noties.markwon.Markwon;
 
 public class menu extends AppCompatActivity {
-    private SharedPreferences sharedPref;
-    private Button deleteSP, deleteDB;
-    private ImageButton closeMenu;
+
     private DatabaseHelper dbHelper;
-    private Switch switchLM;
-    private boolean isDarkTheme = false;
+    private LinearLayout layout;
+    private SharedPreferences sharedPref;
+    private Button btnOpenSettings, btnMdHistory;
+    private ImageButton closeMenu, btnChangeState, btnChangeMD;
+    private EditText etBiography;
+    private TextView tvUserMenu, tvPrincMD;
+    private ImageView ivProfilePicture;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        // Retrieve the theme preference
-        sharedPref = getSharedPreferences("ThemePrefs", MODE_PRIVATE);
-        isDarkTheme = sharedPref.getBoolean("isDarkTheme", false);
-
-        // Set the theme before setting the content view
-        AppCompatDelegate.setDefaultNightMode(
-                isDarkTheme ? AppCompatDelegate.MODE_NIGHT_YES : AppCompatDelegate.MODE_NIGHT_NO
-        );
-
         setContentView(R.layout.menu);
+        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.menu), (v, insets) -> {
+            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
+            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
+            return insets;
+        });
+        SharedPreferences sharedPref = getSharedPreferences("MyPrefs", MODE_PRIVATE);
 
-        // Initialize UI components
-        initializeUI();
-    }
 
-    private void initializeUI() {
+        btnOpenSettings = findViewById(R.id.btnOpenSettings);
+        btnOpenSettings.setOnClickListener(new View.OnClickListener(){
+           @Override
+           public void onClick(View v){
+
+               Intent intent = new Intent(menu.this, settings.class);
+               startActivity(intent);
+
+           }
+        });
 
         closeMenu = findViewById(R.id.closeMenu);
-        ((View) closeMenu).setOnClickListener(v -> finish());
+        closeMenu.setOnClickListener(v -> finish());
 
+        btnMdHistory = findViewById(R.id.btnMdHistory);
+        btnMdHistory.setOnClickListener(v -> {
+           Intent intent = new Intent(menu.this, md_history.class);
+       });
 
+        tvUserMenu = findViewById(R.id.tvUserMenu);
+        tvUserMenu.setText(sharedPref.getString("user",null));
 
-        deleteSP = findViewById(R.id.deleteSP);
-        deleteSP.setOnClickListener(v -> {
-            // Implement delete SharedPreferences logic here
-        });
+        etBiography = findViewById(R.id.etBiography);
+        tvPrincMD = findViewById(R.id.tvPrincMD);
 
-        dbHelper = new DatabaseHelper(this);
-        SQLiteDatabase db = dbHelper.getWritableDatabase();
-        deleteDB = findViewById(R.id.deleteDB);
-        deleteDB.setOnClickListener(v -> dbHelper.deleteDB(db));
-
-        switchLM = findViewById(R.id.switchLM);
-        switchLM.setChecked(isDarkTheme);
-        updateSwitchText();
-
-        switchLM.setOnCheckedChangeListener((buttonView, isChecked) -> {
-            isDarkTheme = isChecked;
-            SharedPreferences.Editor editor = sharedPref.edit();
-            editor.putBoolean("isDarkTheme", isDarkTheme);
-            editor.apply();
-
-            // Change theme without recreating the activity
-            AppCompatDelegate.setDefaultNightMode(
-                    isDarkTheme ? AppCompatDelegate.MODE_NIGHT_YES : AppCompatDelegate.MODE_NIGHT_NO
-            );
-
-            updateSwitchText();
-        });
-    }
-
-    private void updateSwitchText() {
-        if (isDarkTheme) {
-            switchLM.setText("Dark mode");
-            //Toast.makeText(this, "Checked", Toast.LENGTH_SHORT).show();
-        } else {
-            switchLM.setText("Light mode");
-            //Toast.makeText(this, "Unchecked", Toast.LENGTH_SHORT).show();
+        ivProfilePicture = findViewById(R.id.ivProfilePicture);
+        String token = "none";
+        String user = sharedPref.getString("user", null);
+        String biography = null;
+        String imageURL = null;
+        try {
+            imageURL = new GetGitHubPP().execute(token, user).get();
+            Toast.makeText(this, "user = " + user, Toast.LENGTH_SHORT).show();
+        } catch (Exception e) {
+            e.printStackTrace();
         }
+
+        try {
+            biography = new GetGitHubBio().execute(token, "jotaaloud").get();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        String starredBio = sharedPref.getString("starredBio", null);
+
+
+        try {
+            String readme= new GetGitHubReadme().execute(token, "jotaaloud").get();
+            Markwon markwon = Markwon.create(this);
+            if(starredBio != null && !(starredBio.isEmpty())){
+                markwon.setMarkdown(tvPrincMD, starredBio);
+            } else if (readme != null && !(readme.isEmpty())) {
+                markwon.setMarkdown(tvPrincMD, readme);
+            }
+
+
+        } catch (Exception e) {
+           // Log.e(e.printStackTrace());
+        }
+
+        etBiography.setText(biography);
+
+        if(imageURL != null && !imageURL.isEmpty()){
+            Picasso.get()
+                    .load(imageURL)
+                    .into(ivProfilePicture);
+        }else{
+            ivProfilePicture.setImageResource(R.drawable.account_circle_outline);
+        }
+
+        btnChangeState = findViewById(R.id.btnChangeState);
+        btnChangeState.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v){
+                String biography2 = etBiography.getText().toString();
+
+                String token = sharedPref.getString("token", null);
+
+                if(token != null && user!=null){
+                    new UpdateGitHubBio().execute(token, user, biography2);
+                    Toast.makeText(menu.this,"Biography changed!", Toast.LENGTH_SHORT).show();
+                }
+
+            }
+        });
+
+        btnChangeMD = findViewById(R.id.btnChangeMD);
+        btnChangeMD.setOnClickListener(new View.OnClickListener(){
+           @Override
+           public void onClick(View v){
+
+               if(starredBio != null && !(starredBio.isEmpty())){
+                   new UpdateGitHubReadme().execute(token, user, starredBio);
+                   Toast.makeText(menu.this, "Readme from Github changed!", Toast.LENGTH_SHORT).show();
+               }else{
+                   Toast.makeText(menu.this, "You need to save a new bio first.", Toast.LENGTH_SHORT).show();
+               }
+
+
+           }
+        });
+
     }
 }

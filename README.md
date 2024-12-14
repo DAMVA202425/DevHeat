@@ -4,6 +4,70 @@
 Android app to automate GitHub profile edition and README creation.
 
 
+## How to use it?
+
+Firstly, you will be on the main screen with no users.
+You need to click on "Add user".
+Each user will save it's own information.
+
+<img src="./Assets/1login.png" alt="Imagen de perfil" style="width: 30%;">
+<img src="./Assets/2createUser.png" alt="Imagen de perfil" style="width: 30%;">
+
+
+Then, You will need to login, clicking at the button that screens your user name, and write it's password.
+
+
+<img src="./Assets/3login.png" alt="Imagen de perfil" style="width: 30%;">
+<img src="./Assets/4loginpassword.png" alt="Imagen de perfil" style="width: 30%;">
+
+You will enter to the Markdown creation tool.
+Add your selected category along with the desired text
+You have to add a category each time you want to change the category.
+
+<img src="./Assets/5templateEmpty.png" alt="Imagen de perfil" style="width: 30%;">
+<img src="./Assets/6templateFull.png" alt="Imagen de perfil" style="width: 30%;">
+
+You can:
+ - Save at default location
+ - Change the path where you want to save your file.
+ - Star the file. If you are planning to change the main Readme form your GitHub Account, this is what you need to do.
+
+<img src="./Assets/7saveMarkdown.png" alt="Imagen de perfil" style="width: 30%;">
+<img src="./Assets/8clipboardSaved.png" alt="Imagen de perfil" style="width: 30%;">
+
+By clicking the menu Icon at the right corner, you will see your information. 
+
+
+
+<img src="./Assets/9menu.png" alt="Imagen de perfil" style="width: 30%;">
+<img src="./Assets/10settings.png" alt="Imagen de perfil" style="width: 30%;">
+
+To link your DevHeat's account with your Github account, you need to enter your Personal Acces Token.
+Don't worry, this app won't share or upload your token or any information for other purposes apart from what you want.
+
+Also, you can change the light theme! It will work all over the app.
+
+> [!CAUTION]
+> If you click on 'delete database', it will delete all the users and their information.
+
+
+<img src="./Assets/11settings.png" alt="Imagen de perfil" style="width: 30%;">
+<img src="./Assets/12deleteDatabase.png" alt="Imagen de perfil" style="width: 30%;">
+
+
+Once the token is saved, you can change your Github bio, or change your main Readme!
+Once the changes are made, your GitHub account will be updated instantly, and could look like this:
+
+
+<img src="./Assets/13finishedMenu.png" alt="Imagen de perfil" style="width: 30%;">
+<img src="./Assets/14finishedSignIn.png" alt="Imagen de perfil" style="width: 30%;">
+
+
+
+<details closed>
+    <summary>Click here for technical info</summary>
+
+
 I used SQLite, SharedPreferences, Internal Storage, XML elements generation...
 
 There are 5 activities:
@@ -46,3 +110,6 @@ These EditText instances are added to a list for later access to their content.
 A Switch:
 
 Lets the user choose between the dark-mode or the light-mode, and stores the option at the <ins>SharedPreferences</ins>.
+
+
+</details>
