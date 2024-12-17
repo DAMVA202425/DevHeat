@@ -27,13 +27,13 @@ import java.util.List;
 
 public class sign_in extends AppCompatActivity {
 
-    //private DatabaseHelper dbHelper;
+    private DatabaseHelper dbHelper;
     private Button btnSignIn;
     private EditText etUserName, etPassword;
     private TextView textView3;
-    private String user, password;
+    private String user, password, token, imageURL;
     private Bundle extras;
-    private SharedPreferences sharedPref;
+    private SharedPreferences sharedThemesPref, MyPrefs;
     private ImageView ivPPsignIn;
 
     @Override
@@ -47,14 +47,14 @@ public class sign_in extends AppCompatActivity {
             return insets;
         });
 
-        sharedPref = getSharedPreferences("MyPrefs",MODE_PRIVATE);
-        user = sharedPref.getString("user", null);
+        MyPrefs = getSharedPreferences("MyPrefs",MODE_PRIVATE);
+        dbHelper = new DatabaseHelper(this);
+        token = dbHelper.getToken(MyPrefs.getInt("loggedID",-1));
+        user = MyPrefs.getString("user", null);
         ivPPsignIn = findViewById(R.id.ivPPsignIn);
-        String imageURL = null;
-        try {
+        dbHelper = new DatabaseHelper(this);
 
-            String token ="none";
-            Toast.makeText(this, "user = " + user, Toast.LENGTH_SHORT).show();
+        try {
             imageURL = new GetGitHubPP().execute(token, user).get();
             Log.w("imageURL","imageURL = "+ imageURL);
             if(imageURL != null && !imageURL.isEmpty()){
@@ -94,9 +94,8 @@ public class sign_in extends AppCompatActivity {
                 password = etPassword.getText().toString();
 
                 if(user.equals(userName) && password.equals(userPassword)){
-                    SharedPreferences.Editor editor = sharedPref.edit();
+                    SharedPreferences.Editor editor = MyPrefs.edit();
                     editor.putInt("loggedID",userID);
-                    Toast.makeText(sign_in.this, "userID = "+userID,Toast.LENGTH_SHORT).show();
                     editor.apply();
                     Intent intent = new Intent(sign_in.this, template.class);
                     startActivity(intent);
@@ -108,4 +107,41 @@ public class sign_in extends AppCompatActivity {
         });
 
     }
+
+    @Override
+    public void onResume(){
+        super.onResume();  //probar con user
+        if (dbHelper == null) {
+            dbHelper = new DatabaseHelper(this);
+        }
+        try{
+
+            token = dbHelper.getToken(MyPrefs.getInt("loggedID",-1));
+            Log.d("Debug", "Token: " + token);
+            imageURL = new GetGitHubPP().execute(token, user).get();
+            Log.d("Debug", "ImageURL: " + imageURL);
+        }catch(Exception e){
+            Log.e("error url", "imageURL = "+ imageURL +" y token = " + token+ "user = "+ user);
+            Log.e("Error", "Excepción capturada: " + e.getMessage());
+        }
+
+        if(imageURL != null && !imageURL.isEmpty()){
+            Picasso.get()
+                    .load(imageURL)
+                    .into(ivPPsignIn);
+        }else{
+            ivPPsignIn.setImageResource(R.drawable.account_circle_outline);
+
+        }
+    }
+
+    @Override
+    public void onStop(){
+        super.onStop();
+        imageURL = null;
+        token = null;
+        Log.e("Error", "onStop launched ");
+        Picasso.get().invalidate(imageURL);
+    }
+
 }

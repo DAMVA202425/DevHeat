@@ -35,30 +35,25 @@ public class new_user extends AppCompatActivity{
         etNewPassword2 = findViewById(R.id.etNewPassword2);
         dbHelper = new DatabaseHelper(this);
         btnCreateUser = findViewById(R.id.btnCreateUser);
-        btnCreateUser.setOnClickListener(new View.OnClickListener(){
-            @Override
-            public void onClick(View v){
-                String user = etNewUsername.getText().toString();
+        btnCreateUser.setOnClickListener(v -> {
 
-                String newPassword = etNewPassword.getText().toString();
-                String newPassword2 = etNewPassword2.getText().toString();
+            String user = etNewUsername.getText().toString();
 
-                if(newPassword.equals(newPassword2)){
-                    boolean inserted = dbHelper.insertUser(user,newPassword);
+            String newPassword = etNewPassword.getText().toString();
+            String newPassword2 = etNewPassword2.getText().toString();
 
-                    if(inserted){
-                        Toast.makeText(new_user.this, "User: "+user+" created.",Toast.LENGTH_SHORT).show();
-                    }else{
-                        Toast.makeText(new_user.this, "Error creating the user.",Toast.LENGTH_SHORT).show();
-                    }
+            if(newPassword.equals(newPassword2)){
+                boolean inserted = dbHelper.insertUser(user,newPassword);
 
+                if(inserted){
+                    Toast.makeText(new_user.this, "User: "+user+" created.",Toast.LENGTH_SHORT).show();
                 }else{
-                    Toast.makeText(new_user.this, "Enter the same password twice",Toast.LENGTH_SHORT).show();
+                    Toast.makeText(new_user.this, "Error creating the user.",Toast.LENGTH_SHORT).show();
                 }
 
-
+            }else{
+                Toast.makeText(new_user.this, "Enter the same password twice",Toast.LENGTH_SHORT).show();
             }
-
         });
 
 

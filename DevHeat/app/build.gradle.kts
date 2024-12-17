@@ -6,12 +6,15 @@ android {
     namespace = "com.example.devheat"
     compileSdk = 34
 
+
     defaultConfig {
         applicationId = "com.example.devheat"
         minSdk = 34
         targetSdk = 34
         versionCode = 1
         versionName = "1.0"
+        vectorDrawables.useSupportLibrary = true
+
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -29,6 +32,8 @@ android {
         sourceCompatibility = JavaVersion.VERSION_1_8
         targetCompatibility = JavaVersion.VERSION_1_8
     }
+
+
 }
 
 dependencies {
@@ -40,4 +45,8 @@ dependencies {
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)
+
+    implementation("io.noties.markwon:core:4.6.2")
+    implementation("com.squareup.picasso:picasso:2.71828")
+
 }

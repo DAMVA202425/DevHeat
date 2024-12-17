@@ -50,7 +50,7 @@ public class template extends AppCompatActivity {
     private List <EditText> TextContainers = new ArrayList<>();
     private int[] type = new int[9];
     private DatabaseHelper dbHelper;
-    private SharedPreferences sharedPref;
+    private SharedPreferences sharedThemesPref, MyPrefs;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,15 +64,12 @@ public class template extends AppCompatActivity {
         });
 
         dbHelper = new DatabaseHelper(this);
-        sharedPref = getSharedPreferences("MyPrefs", MODE_PRIVATE);
-        //spinnerMK = findViewById(R.id.spinnerMK);
+        MyPrefs = getSharedPreferences("MyPrefs", MODE_PRIVATE);
 
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(
                 this,
                 R.array.arrayMKTypes,
                 android.R.layout.simple_spinner_item);
-        //spinnerMK.setAdapter(adapter);
-        //spinnerMK.setOnItemSelectedListener(ist);
 
         containerLayout = findViewById(R.id.containerLayout);
         btnAddCathegory = findViewById(R.id.btnAddCathegory);
@@ -93,7 +90,6 @@ public class template extends AppCompatActivity {
                 spinner.setOnItemSelectedListener(ist);
 
                 containerLayout.addView(spinner);
-                //containerLayout.addView(editText);
                 spinners.add(spinner);
             }
         });
@@ -109,8 +105,7 @@ public class template extends AppCompatActivity {
                 ClipData clip = ClipData.newPlainText("Simple text", textToCopy);
                 clipboard.setPrimaryClip(clip);
                 //Toast.makeText(getApplicationContext(), "Text copied to clipboard", Toast.LENGTH_SHORT).show();
-                sharedPref = getSharedPreferences("MyPrefs",MODE_PRIVATE);
-                int id = sharedPref.getInt("loggedID",-1);
+                int id = MyPrefs.getInt("loggedID",-1);
                 boolean inserted = dbHelper.insertMdFile(id, textToCopy);
                 Toast.makeText(getApplicationContext(), "Saved to clipboard", Toast.LENGTH_SHORT).show();
 
@@ -165,7 +160,7 @@ public class template extends AppCompatActivity {
             @Override
             public void onClick(DialogInterface dialog, int which) {
 
-                SharedPreferences.Editor editor = sharedPref.edit();
+                SharedPreferences.Editor editor = MyPrefs.edit();
                 editor.putString("starredBio", textToCopy);
                 editor.apply();
 
@@ -201,7 +196,7 @@ public class template extends AppCompatActivity {
         if (requestCode == 123 && resultCode == RESULT_OK) {
             Uri treeUri = data.getData();
             String path = treeUri.getPath();
-            // Ahora 'path' contiene la ruta seleccionada
+
             Toast.makeText(this, "Selected path: " + path, Toast.LENGTH_LONG).show();
         }
     }
@@ -211,8 +206,8 @@ public class template extends AppCompatActivity {
         FileOutputStream fos = null;
         getContent();
         try {
-            fos = openFileOutput(path + "nuevoArchivo.txt", Context.MODE_PRIVATE);
 
+            fos = openFileOutput(path + "nuevoArchivo.txt", Context.MODE_PRIVATE);
             fos.write(textToCopy.getBytes(StandardCharsets.UTF_8));
             Toast.makeText(template.this, "File created", Toast.LENGTH_SHORT).show();
             fos.close();
@@ -237,9 +232,9 @@ public class template extends AppCompatActivity {
         public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
             Context context = view.getContext();
 
-            String itemSeleccionado = parent.getItemAtPosition(position).toString();
+            String selectedItem = parent.getItemAtPosition(position).toString();
 
-            if(itemSeleccionado.equals("Text")){
+            if(selectedItem.equals("Text")){
                 EditText editText = new EditText(context);
                 LinearLayout.LayoutParams paramsE = new LinearLayout.LayoutParams(
                         LinearLayout.LayoutParams.MATCH_PARENT,
@@ -256,7 +251,7 @@ public class template extends AppCompatActivity {
                 TextContainers.add(editText);
                 containerLayout.addView(editText);
 
-            } else if (itemSeleccionado.equals("1st level Heading")){
+            } else if (selectedItem.equals("1st level Heading")){
                 EditText editText = new EditText(context);
                 editText.setId(numTextContainers);
                 type[numTextContainers] = 1;
@@ -273,7 +268,7 @@ public class template extends AppCompatActivity {
                 TextContainers.add(editText);
                 containerLayout.addView(editText);
 
-            }else if(itemSeleccionado.equals("2nd level heading")){
+            }else if(selectedItem.equals("2nd level heading")){
                 EditText editText = new EditText(context);
                 editText.setId(numTextContainers);
                 type[numTextContainers] = 2;
@@ -290,7 +285,7 @@ public class template extends AppCompatActivity {
                 TextContainers.add(editText);
                 containerLayout.addView(editText);
 
-            }else if(itemSeleccionado.equals("3rd level heading")){
+            }else if(selectedItem.equals("3rd level heading")){
                 EditText editText = new EditText(context);
                 editText.setId(numTextContainers);
                 type[numTextContainers] = 3;
@@ -306,23 +301,7 @@ public class template extends AppCompatActivity {
                 editTexts.add(editText);
                 TextContainers.add(editText);
                 containerLayout.addView(editText);
-            }else if(itemSeleccionado.equals("Link")){
-                EditText editText = new EditText(context);
-                editText.setId(numTextContainers);
-                type[numTextContainers] = 4;
-                numTextContainers ++;
-                LinearLayout.LayoutParams paramsE = new LinearLayout.LayoutParams(
-                        LinearLayout.LayoutParams.MATCH_PARENT,
-                        LinearLayout.LayoutParams.WRAP_CONTENT
-                );
-                paramsE.setMargins(0, 0, 0, 16);
-                editText.setLayoutParams(paramsE);
-                editText.setPadding(8, 8, 8, 8);
-                editText.setHint("Your link here");
-                editTexts.add(editText);
-                TextContainers.add(editText);
-                containerLayout.addView(editText);
-            }else if(itemSeleccionado.equals("Text + link")){
+            }else if(selectedItem.equals("Text + link")){
                 EditText editText = new EditText(context);
                 editText.setId(numTextContainers);
                 type[numTextContainers] = 61;
@@ -349,7 +328,7 @@ public class template extends AppCompatActivity {
                 editTexts.add(editText2);
                 TextContainers.add(editText2);
                 containerLayout.addView(editText2);
-            }else if(itemSeleccionado.equals("HR")){
+            }else if(selectedItem.equals("HR")){
                 EditText editText = new EditText(context);
                 editText.setId(numTextContainers);
                 type[numTextContainers] = 7;
@@ -367,7 +346,7 @@ public class template extends AppCompatActivity {
                 TextContainers.add(editText);
                 containerLayout.addView(editText);
 
-            }else if(itemSeleccionado.equals("!Note text")){
+            }else if(selectedItem.equals("!Note text")){
                 EditText editText = new EditText(context);
                 editText.setId(numTextContainers);
                 type[numTextContainers] = 9;

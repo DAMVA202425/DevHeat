@@ -2,7 +2,10 @@ package com.example.devheat;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.res.ColorStateList;
 import android.database.sqlite.SQLiteDatabase;
+import android.graphics.Color;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -12,6 +15,7 @@ import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatDelegate;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
@@ -26,13 +30,13 @@ public class MainActivity extends AppCompatActivity {
     private ImageButton menuMain;
     private LinearLayout layout;
     private DatabaseHelper dbHelper;
-    private boolean isDarkMode;
-    private SharedPreferences sharedPreferences;
+    private boolean isDarkTheme;
+    private SharedPreferences sharedThemesPref, MyPrefs;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        //sharedPreferences = getSharedPreferences("ThemePrefs", MODE_PRIVATE);
-        //isDarkMode = sharedPreferences.getBoolean("isDarkMode", false);
+        //sharedThemesPref = getSharedPreferences("ThemePrefs", MODE_PRIVATE);
+        //isDarkMode = sharedThemesPref.getBoolean("isDarkMode", false);
         //setTheme(isDarkMode ? R.style.Theme_DevHeat_Dark : R.style.Theme_DevHeat_Light);
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
@@ -43,16 +47,68 @@ public class MainActivity extends AppCompatActivity {
             return insets;
         });
 
-        SharedPreferences sharedPref = getSharedPreferences("MyPrefs",MODE_PRIVATE);
-        SharedPreferences.Editor editor = sharedPref.edit();
+        // Retrieve the theme preference
+        sharedThemesPref = getSharedPreferences("ThemePrefs", MODE_PRIVATE);
+        isDarkTheme = sharedThemesPref.getBoolean("isDarkTheme", false);
+
+        // Set the theme before setting the content view
+        AppCompatDelegate.setDefaultNightMode(
+                isDarkTheme ? AppCompatDelegate.MODE_NIGHT_YES : AppCompatDelegate.MODE_NIGHT_NO
+        );
+
+        initializeUI();
+
+    }
+
+    @Override
+    protected void onResume(){
+        super.onResume();
+        layout.removeAllViews();
+        dbHelper = new DatabaseHelper(this);
+
+        List<String> users = dbHelper.getAllUserNamesList();
+        for(String user : users) {
+            Button button = new Button(this);
+            button.setText(user);
+            button.setBackgroundResource(android.R.drawable.btn_default);
+            button.setTextColor(getResources().getColor(android.R.color.black));
+            String userPassword = dbHelper.getPassword(user);
+
+            int id = Integer.parseInt(dbHelper.getID(user));
+
+
+            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.MATCH_PARENT,
+                    LinearLayout.LayoutParams.WRAP_CONTENT
+            );
+            params.setMargins(0, 0, 0, 0); // 16dp de margen inferior
+            button.setLayoutParams(params);
+            button.setOnClickListener(v -> {
+                MyPrefs = getSharedPreferences("MyPrefs",MODE_PRIVATE);
+                SharedPreferences.Editor editor = MyPrefs.edit();
+                editor.putString("user", user);
+                editor.apply();
+
+                Intent intent = new Intent(MainActivity.this, sign_in.class);
+                intent.putExtra("userName", user);            //Cada usuario hará
+                intent.putExtra("userPassword", userPassword);
+                intent.putExtra("userID", id); //login con su nombre
+                startActivity(intent);              //contraseña e ID
+
+            });
+            layout.addView(button);
+
+        }
+    }
+
+    private void initializeUI(){
+        MyPrefs = getSharedPreferences("MyPrefs",MODE_PRIVATE);
+        SharedPreferences.Editor editor = MyPrefs.edit();
 
         btnCreateU = findViewById(R.id.btnCreateU);
-        btnCreateU.setOnClickListener(new View.OnClickListener(){
-            @Override
-            public void onClick(View v){
-                Intent intent = new Intent(MainActivity.this, new_user.class);
-                startActivity(intent);
-            }
+        btnCreateU.setOnClickListener(v -> {
+            Intent intent = new Intent(MainActivity.this, new_user.class);
+            startActivity(intent);
         });
         layout = findViewById(R.id.layout1);
 
@@ -88,49 +144,4 @@ public class MainActivity extends AppCompatActivity {
 
         }
     }
-
-    @Override
-    protected void onResume(){
-        super.onResume();
-        layout.removeAllViews();
-        dbHelper = new DatabaseHelper(this);
-        //SQLiteDatabase db = dbHelper.getReadableDatabase();  //estas 2 lineas reinician//usuarios y mdFiles
-        //dbHelper.onUpgrade(db,0,1);  //cada vez q inicia app
-
-        List<String> users = dbHelper.getAllUserNamesList();
-        for(String user : users) {
-            Button button = new Button(this);
-            button.setText(user);
-            button.setBackgroundResource(android.R.drawable.btn_default);
-            button.setTextColor(getResources().getColor(android.R.color.black));
-            String userPassword = dbHelper.getPassword(user);
-
-            int id = Integer.parseInt(dbHelper.getID(user));
-
-
-            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
-                    LinearLayout.LayoutParams.MATCH_PARENT,
-                    LinearLayout.LayoutParams.WRAP_CONTENT
-            );
-            params.setMargins(0, 0, 0, 0); // 16dp de margen inferior
-            button.setLayoutParams(params);
-            button.setOnClickListener(v -> {
-                SharedPreferences sharedPref = getSharedPreferences("MyPrefs",MODE_PRIVATE);
-                SharedPreferences.Editor editor = sharedPref.edit();
-                editor.putString("user", user);
-                editor.apply();
-
-                Intent intent = new Intent(MainActivity.this, sign_in.class);
-                intent.putExtra("userName", user);            //Cada usuario hará
-                intent.putExtra("userPassword", userPassword);
-                intent.putExtra("userID", id); //login con su nombre
-                startActivity(intent);              //contraseña e ID
-
-            });
-            layout.addView(button);
-
-        }
-    }
-
-
 }

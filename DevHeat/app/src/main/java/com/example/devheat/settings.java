@@ -8,6 +8,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -22,7 +23,7 @@ import androidx.appcompat.app.AppCompatDelegate;
 import com.example.devheat.database.DatabaseHelper;
 
 public class settings extends AppCompatActivity {
-    private SharedPreferences sharedPref;
+    private SharedPreferences sharedThemesPref, MyPrefs;
     private Button deleteSP, deleteDB, btnMdHistory;
     private ImageButton closeMenu, ibtnSaveToken;
     private ImageView imageLightMode;
@@ -36,8 +37,9 @@ public class settings extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
         // Retrieve the theme preference
-        sharedPref = getSharedPreferences("ThemePrefs", MODE_PRIVATE);
-        isDarkTheme = sharedPref.getBoolean("isDarkTheme", false);
+        sharedThemesPref = getSharedPreferences("ThemePrefs", MODE_PRIVATE);
+        MyPrefs = getSharedPreferences("MyPrefs", MODE_PRIVATE);
+        isDarkTheme = sharedThemesPref.getBoolean("isDarkTheme", false);
 
         // Set the theme before setting the content view
         AppCompatDelegate.setDefaultNightMode(
@@ -72,22 +74,33 @@ public class settings extends AppCompatActivity {
         ibtnSaveToken = findViewById(R.id.ibtnSaveToken);
         ibtnSaveToken.setOnClickListener(v -> {
             String token = etToken.getText().toString();
-            SharedPreferences.Editor editor = sharedPref.edit();
-            editor.putString("token", token);
-            Toast.makeText(settings.this, "Token saved", Toast.LENGTH_SHORT).show();
+
+            int loggedID = MyPrefs.getInt("loggedID",-1);
+            dbHelper = new DatabaseHelper(this);
+
+            dbHelper.updateToken(loggedID, token);
+            Toast.makeText(settings.this, "Token saved.", Toast.LENGTH_SHORT).show();
+
         });
 
 
-        deleteSP = findViewById(R.id.deleteSP);
+        deleteSP = findViewById(R.id.deleteSP);  //Deletes [sharedThemesPref] and [MyPrefs] shared preferences
         deleteSP.setOnClickListener(v -> {
-            // Implement delete SharedPreferences logic here
+
+            SharedPreferences.Editor themesEditor = sharedThemesPref.edit();
+            themesEditor.clear(); themesEditor.apply();
+
+            MyPrefs = getSharedPreferences("MyPrefs", MODE_PRIVATE);
+            SharedPreferences.Editor MyPrefsEditor = MyPrefs.edit();
+            MyPrefsEditor.clear(); MyPrefsEditor.apply();
+
         });
 
         deleteDB = findViewById(R.id.deleteDB);
         deleteDB.setOnClickListener(v -> {
             dbHelper = new DatabaseHelper(this);
-            SQLiteDatabase db = dbHelper.getReadableDatabase(); //Reinicia usuarios
-            dbHelper.onUpgrade(db,0,1);   //E historial de archivos markdown
+            SQLiteDatabase db = dbHelper.getReadableDatabase(); //Truncates users
+            dbHelper.onUpgrade(db,0,1);   // and history of created Marckdown files
 
             Toast.makeText(this,"Database restored succesfully",Toast.LENGTH_SHORT).show();
         });
@@ -106,7 +119,7 @@ public class settings extends AppCompatActivity {
 
         switchLM.setOnCheckedChangeListener((buttonView, isChecked) -> {
             isDarkTheme = isChecked;
-            SharedPreferences.Editor editor = sharedPref.edit();
+            SharedPreferences.Editor editor = sharedThemesPref.edit();
             editor.putBoolean("isDarkTheme", isDarkTheme);
             editor.apply();
 
@@ -122,10 +135,11 @@ public class settings extends AppCompatActivity {
     private void updateSwitchText() {
         if (isDarkTheme) {
             switchLM.setText("Dark mode");
-            //Toast.makeText(this, "Checked", Toast.LENGTH_SHORT).show();
+            Log.i("Light theme", "Light theme changed");
         } else {
             switchLM.setText("Light mode");
-            //Toast.makeText(this, "Unchecked", Toast.LENGTH_SHORT).show();
+
         }
     }
+
 }
