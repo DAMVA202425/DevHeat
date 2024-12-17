@@ -20,7 +20,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         String CREATE_TABLE1 = "CREATE TABLE users ("
                 + "id INTEGER PRIMARY KEY AUTOINCREMENT, "
                 + "name TEXT, "
-                + "password TEXT) ";
+                + "password TEXT, "
+                + "token TEXT)";
         String CREATE_TABLE2 = " CREATE TABLE mdFiles ("
                 + "id INTEGER, "
                 + "mdContent TEXT);";
@@ -109,6 +110,41 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.close();
         return builder.toString();
     }
+
+    public boolean updateToken(int id, String token) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues contentValues = new ContentValues();
+        contentValues.put("token", token);
+        // Actualiza la fila donde el "id" coincide
+        int rowsAffected = db.update("users", contentValues, "id = ?", new String[]{String.valueOf(id)});
+        return rowsAffected > 0;  // Devuelve true si se actualizó al menos una fila
+    }
+
+    public String getToken(int id){
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.rawQuery("SELECT token FROM users where id = ?", new String[]{String.valueOf(id)});
+
+        // Crea un StringBuilder para construir la cadena de salida
+        StringBuilder builder = new StringBuilder();
+        if (cursor.getCount() == 0) {
+            // Si no hay usuarios, agrega un mensaje al StringBuilder
+            builder.append("There are no id's");
+        } else {
+            // Si hay registros, itera sobre cada uno de ellos
+            while (cursor.moveToNext()) {
+                // Obtiene la contraseña del usuario desde la tercera columna (índice 2)
+                String token  = cursor.getString(0);
+                builder.append(token);
+            }
+        }
+        // Cierra el cursor para liberar recursos
+        cursor.close();
+        db.close();
+        return builder.toString();
+    }
+
+
+
 
     // Método para leer todos los estudiantes
     public String getAllStudents() {

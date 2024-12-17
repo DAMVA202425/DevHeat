@@ -22,7 +22,8 @@ public class md_history extends AppCompatActivity {
 
     private DatabaseHelper dbHelper;
     private LinearLayout layout;
-    private SharedPreferences sharedPref;
+    private SharedPreferences sharedThemesPref, MyPrefs;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,10 +35,10 @@ public class md_history extends AppCompatActivity {
             return insets;
         });
 
-        sharedPref = getSharedPreferences("MyPrefs",MODE_PRIVATE);
+        MyPrefs = getSharedPreferences("MyPrefs",MODE_PRIVATE);
 
 
-        int id = sharedPref.getInt("loggedID",-1);
+        int id = MyPrefs.getInt("loggedID",-1);
         Toast.makeText(md_history.this, "userID = "+id, Toast.LENGTH_SHORT).show();
         dbHelper = new DatabaseHelper(this);
         List<String> mdContents = dbHelper.getAllMdContentList(id);

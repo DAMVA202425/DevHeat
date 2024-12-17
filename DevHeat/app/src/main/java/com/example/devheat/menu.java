@@ -31,12 +31,14 @@ public class menu extends AppCompatActivity {
 
     private DatabaseHelper dbHelper;
     private LinearLayout layout;
-    private SharedPreferences sharedPref;
+    private SharedPreferences sharedThemesPref, MyPrefs;
     private Button btnOpenSettings, btnMdHistory;
     private ImageButton closeMenu, btnChangeState, btnChangeMD;
     private EditText etBiography;
     private TextView tvUserMenu, tvPrincMD;
     private ImageView ivProfilePicture;
+    String imageURL, token, user;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,7 +49,7 @@ public class menu extends AppCompatActivity {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
-        SharedPreferences sharedPref = getSharedPreferences("MyPrefs", MODE_PRIVATE);
+        MyPrefs = getSharedPreferences("MyPrefs", MODE_PRIVATE);
 
 
         btnOpenSettings = findViewById(R.id.btnOpenSettings);
@@ -70,19 +72,22 @@ public class menu extends AppCompatActivity {
        });
 
         tvUserMenu = findViewById(R.id.tvUserMenu);
-        tvUserMenu.setText(sharedPref.getString("user",null));
+        tvUserMenu.setText(MyPrefs.getString("user",null));
 
         etBiography = findViewById(R.id.etBiography);
         tvPrincMD = findViewById(R.id.tvPrincMD);
 
         ivProfilePicture = findViewById(R.id.ivProfilePicture);
-        String token = "none";
-        String user = sharedPref.getString("user", null);
+
+        dbHelper = new DatabaseHelper(this);
+
+        token = dbHelper.getToken(MyPrefs.getInt("loggedID",-1));
+        user = MyPrefs.getString("user", null);
+        String starredBio = MyPrefs.getString("starredBio", null);
         String biography = null;
-        String imageURL = null;
+
         try {
             imageURL = new GetGitHubPP().execute(token, user).get();
-            Toast.makeText(this, "user = " + user, Toast.LENGTH_SHORT).show();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -90,14 +95,13 @@ public class menu extends AppCompatActivity {
         try {
             biography = new GetGitHubBio().execute(token, "jotaaloud").get();
         } catch (Exception e) {
-            e.printStackTrace();
+            Log.e("Biography error", "No biography found");
         }
 
-        String starredBio = sharedPref.getString("starredBio", null);
 
 
         try {
-            String readme= new GetGitHubReadme().execute(token, "jotaaloud").get();
+            String readme= new GetGitHubReadme().execute(token, user).get();
             Markwon markwon = Markwon.create(this);
             if(starredBio != null && !(starredBio.isEmpty())){
                 markwon.setMarkdown(tvPrincMD, starredBio);
@@ -107,7 +111,7 @@ public class menu extends AppCompatActivity {
 
 
         } catch (Exception e) {
-           // Log.e(e.printStackTrace());
+            Log.e("Main Readme error", "No readme found");
         }
 
         etBiography.setText(biography);
@@ -121,36 +125,49 @@ public class menu extends AppCompatActivity {
         }
 
         btnChangeState = findViewById(R.id.btnChangeState);
-        btnChangeState.setOnClickListener(new View.OnClickListener(){
-            @Override
-            public void onClick(View v){
-                String biography2 = etBiography.getText().toString();
+        btnChangeState.setOnClickListener(v -> {
+            String biography2 = etBiography.getText().toString();
 
-                String token = sharedPref.getString("token", null);
-
-                if(token != null && user!=null){
-                    new UpdateGitHubBio().execute(token, user, biography2);
-                    Toast.makeText(menu.this,"Biography changed!", Toast.LENGTH_SHORT).show();
-                }
-
+            if(token != null && user!=null){
+                new UpdateGitHubBio().execute(token, user, biography2);
+                Toast.makeText(menu.this,"Biography changed!", Toast.LENGTH_SHORT).show();
             }
+
         });
 
         btnChangeMD = findViewById(R.id.btnChangeMD);
-        btnChangeMD.setOnClickListener(new View.OnClickListener(){
-           @Override
-           public void onClick(View v){
+        btnChangeMD.setOnClickListener(v -> {
 
-               if(starredBio != null && !(starredBio.isEmpty())){
-                   new UpdateGitHubReadme().execute(token, user, starredBio);
-                   Toast.makeText(menu.this, "Readme from Github changed!", Toast.LENGTH_SHORT).show();
-               }else{
-                   Toast.makeText(menu.this, "You need to save a new bio first.", Toast.LENGTH_SHORT).show();
-               }
+            if(starredBio != null && !(starredBio.isEmpty())){
+                new UpdateGitHubReadme().execute(token, user, starredBio);
+                Toast.makeText(menu.this, "Readme from Github changed!", Toast.LENGTH_SHORT).show();
+            }else{
+                Toast.makeText(menu.this, "You need to save a new bio first.", Toast.LENGTH_SHORT).show();
+            }
 
-
-           }
         });
 
     }
+
+    @Override
+    public void onResume(){
+        super.onResume();
+
+        try{
+            token = dbHelper.getToken(MyPrefs.getInt("loggedID",-1));
+            imageURL = new GetGitHubPP().execute(token, user).get();
+        }catch(Exception e){
+
+        }
+
+        if(imageURL != null && !imageURL.isEmpty()){
+            Picasso.get()
+                    .load(imageURL)
+                    .into(ivProfilePicture);
+        }else{
+            ivProfilePicture.setImageResource(R.drawable.account_circle_outline);
+        }
+    }
+
+
 }

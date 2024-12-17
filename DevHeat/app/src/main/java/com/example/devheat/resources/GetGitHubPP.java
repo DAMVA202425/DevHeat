@@ -9,10 +9,12 @@ import java.net.URL;
 
 public class GetGitHubPP extends AsyncTask<String, Void, String> {
 
+    String token, username;
+
     @Override
     protected String doInBackground(String... params) {
-        String token = params[0];
-        String username = params[1];
+        token = params[0];
+        username = params[1];
         Log.w("username ","username = " + username);
         try {
             URL url = new URL("https://api.github.com/user");
