@@ -7,6 +7,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
@@ -65,6 +66,7 @@ public class MainActivity extends AppCompatActivity {
         super.onResume();
         layout.removeAllViews();
         dbHelper = new DatabaseHelper(this);
+        dbHelper.getAllUsers();
 
         List<String> users = dbHelper.getAllUserNamesList();
         for(String user : users) {
@@ -74,26 +76,29 @@ public class MainActivity extends AppCompatActivity {
             button.setTextColor(getResources().getColor(android.R.color.black));
             String userPassword = dbHelper.getPassword(user);
 
-            int id = Integer.parseInt(dbHelper.getID(user));
 
+            Log.e("user", "user = " + user);
+            //Log.e("id", "id = " + id);
 
             LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
                     LinearLayout.LayoutParams.MATCH_PARENT,
                     LinearLayout.LayoutParams.WRAP_CONTENT
             );
-            params.setMargins(0, 0, 0, 0); // 16dp de margen inferior
+            params.setMargins(0, 0, 0, 0);
             button.setLayoutParams(params);
             button.setOnClickListener(v -> {
                 MyPrefs = getSharedPreferences("MyPrefs",MODE_PRIVATE);
                 SharedPreferences.Editor editor = MyPrefs.edit();
+                int id = dbHelper.getID(user);
                 editor.putString("user", user);
+                editor.putInt("loggedID",id);
                 editor.apply();
 
                 Intent intent = new Intent(MainActivity.this, sign_in.class);
-                intent.putExtra("userName", user);            //Cada usuario hará
+                intent.putExtra("userName", user);
                 intent.putExtra("userPassword", userPassword);
-                intent.putExtra("userID", id); //login con su nombre
-                startActivity(intent);              //contraseña e ID
+                intent.putExtra("userID", id);
+                startActivity(intent);
 
             });
             layout.addView(button);
@@ -115,33 +120,40 @@ public class MainActivity extends AppCompatActivity {
         dbHelper = new DatabaseHelper(this);
 
         List<String> users = dbHelper.getAllUserNamesList();
-        for(String user : users){
+        for (String user : users) {
             Button button = new Button(this);
             button.setText(user);
             button.setBackgroundResource(android.R.drawable.btn_default);
             button.setTextColor(getResources().getColor(android.R.color.black));
+
             String userPassword = dbHelper.getPassword(user);
-            int id = Integer.parseInt(dbHelper.getID(user));
+
+            Log.e("user", "user = " + user);
+            //Log.e("id", "id = " + id);
 
             LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
                     LinearLayout.LayoutParams.MATCH_PARENT,
                     LinearLayout.LayoutParams.WRAP_CONTENT
             );
-            params.setMargins(0, 0, 0, 0); // 16dp de margen inferior
+            params.setMargins(0, 0, 0, 0);
             button.setLayoutParams(params);
+
             button.setOnClickListener(v -> {
-
+                int id = dbHelper.getID(user);
                 editor.putString("user", user);
+                editor.putInt("loggedID",id);
                 editor.apply();
+
                 Intent intent = new Intent(MainActivity.this, sign_in.class);
-                intent.putExtra("userName", user);            //Cada usuario hará
-                intent.putExtra("userPassword",userPassword);
-                intent.putExtra("userID",id); //login con su nombre
-                startActivity(intent);              //contraseña e ID
-
+                intent.putExtra("userName", user);
+                intent.putExtra("userPassword", userPassword);
+                intent.putExtra("userID", id);
+                startActivity(intent);
             });
-            layout.addView(button);
 
+            layout.addView(button);
         }
+
+
     }
-}
+    }

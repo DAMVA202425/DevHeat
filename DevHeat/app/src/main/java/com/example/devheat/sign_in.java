@@ -51,6 +51,7 @@ public class sign_in extends AppCompatActivity {
         dbHelper = new DatabaseHelper(this);
         token = dbHelper.getToken(MyPrefs.getInt("loggedID",-1));
         user = MyPrefs.getString("user", null);
+        
         ivPPsignIn = findViewById(R.id.ivPPsignIn);
         dbHelper = new DatabaseHelper(this);
 
@@ -74,7 +75,7 @@ public class sign_in extends AppCompatActivity {
 
         String userName = intent.getStringExtra("userName");
         String userPassword = intent.getStringExtra("userPassword");
-        int userID = intent.getIntExtra("userID",-1);
+        int userID = intent.getIntExtra("userID", -1);
 
         textView3 = findViewById(R.id.textView3);
         extras = getIntent().getExtras();
@@ -87,22 +88,19 @@ public class sign_in extends AppCompatActivity {
         etPassword = findViewById(R.id.etPassword);
 
         btnSignIn = findViewById(R.id.btnSignIn);
-        btnSignIn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                user = etUserName.getText().toString();
-                password = etPassword.getText().toString();
+        btnSignIn.setOnClickListener(view -> {
+            user = etUserName.getText().toString();
+            password = etPassword.getText().toString();
 
-                if(user.equals(userName) && password.equals(userPassword)){
-                    SharedPreferences.Editor editor = MyPrefs.edit();
-                    editor.putInt("loggedID",userID);
-                    editor.apply();
-                    Intent intent = new Intent(sign_in.this, template.class);
-                    startActivity(intent);
+            if(user.equals(userName) && password.equals(userPassword)){
+                SharedPreferences.Editor editor = MyPrefs.edit();
+                editor.putInt("loggedID",userID);
+                editor.apply();
+                Intent intent1 = new Intent(sign_in.this, template.class);
+                startActivity(intent1);
 
-                }else{
-                    Toast.makeText(sign_in.this, "Incorrect password or username.",Toast.LENGTH_SHORT).show();
-                }
+            }else{
+                Toast.makeText(sign_in.this, "Incorrect password or username.",Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -110,15 +108,22 @@ public class sign_in extends AppCompatActivity {
 
     @Override
     public void onResume(){
-        super.onResume();  //probar con user
+        Intent intent = getIntent();
+
+        String userName = intent.getStringExtra("userName");
+
+
+        super.onResume();
         if (dbHelper == null) {
             dbHelper = new DatabaseHelper(this);
         }
         try{
 
             token = dbHelper.getToken(MyPrefs.getInt("loggedID",-1));
+            Log.d("Debug", "loggedID: " + MyPrefs.getInt("loggedID",-1));
+
             Log.d("Debug", "Token: " + token);
-            imageURL = new GetGitHubPP().execute(token, user).get();
+            imageURL = new GetGitHubPP().execute(token, userName).get();
             Log.d("Debug", "ImageURL: " + imageURL);
         }catch(Exception e){
             Log.e("error url", "imageURL = "+ imageURL +" y token = " + token+ "user = "+ user);
@@ -140,7 +145,7 @@ public class sign_in extends AppCompatActivity {
         super.onStop();
         imageURL = null;
         token = null;
-        Log.e("Error", "onStop launched ");
+        Log.d("Debug", "onStop launched ");
         Picasso.get().invalidate(imageURL);
     }
 

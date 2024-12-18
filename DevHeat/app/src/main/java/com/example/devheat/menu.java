@@ -168,6 +168,4 @@ public class menu extends AppCompatActivity {
             ivProfilePicture.setImageResource(R.drawable.account_circle_outline);
         }
     }
-
-
 }
