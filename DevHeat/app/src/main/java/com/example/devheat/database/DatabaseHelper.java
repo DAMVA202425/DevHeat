@@ -5,6 +5,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.content.ContentValues;
+import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -88,27 +89,29 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return builder.toString();
     }
 
-    public String getID(String name){
+    public int getID(String name) {
         SQLiteDatabase db = this.getReadableDatabase();
-        Cursor cursor = db.rawQuery("SELECT id FROM users where name = ?", new String[]{String.valueOf(name)});
+        Cursor cursor = null;
+        int id = -1; // Inicializa id como null
 
-        // Crea un StringBuilder para construir la cadena de salida
-        StringBuilder builder = new StringBuilder();
-        if (cursor.getCount() == 0) {
-            // Si no hay usuarios, agrega un mensaje al StringBuilder
-            builder.append("There are no id's");
-        } else {
-            // Si hay registros, itera sobre cada uno de ellos
-            while (cursor.moveToNext()) {
-                // Obtiene la contraseña del usuario desde la tercera columna (índice 2)
-                String id  = cursor.getString(0);
-                builder.append(id);
+        try {
+            cursor = db.rawQuery("SELECT id FROM users WHERE name = ? LIMIT 1", new String[]{name});
+
+            if (cursor.moveToFirst()) {
+                id = cursor.getInt(0);
+            } else {
+                Log.d("Debug", "No user found with name: " + name);
             }
+        } catch (Exception e) {
+            Log.e("Error", "Exception while retrieving ID: ", e);
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
+            db.close();
         }
-        // Cierra el cursor para liberar recursos
-        cursor.close();
-        db.close();
-        return builder.toString();
+
+        return id; // Devuelve el ID o null si no se encontró
     }
 
     public boolean updateToken(int id, String token) {
@@ -120,28 +123,34 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return rowsAffected > 0;  // Devuelve true si se actualizó al menos una fila
     }
 
-    public String getToken(int id){
+    public String getToken(int id) {
         SQLiteDatabase db = this.getReadableDatabase();
-        Cursor cursor = db.rawQuery("SELECT token FROM users where id = ?", new String[]{String.valueOf(id)});
+        String token = null;
 
-        // Crea un StringBuilder para construir la cadena de salida
-        StringBuilder builder = new StringBuilder();
-        if (cursor.getCount() == 0) {
-            // Si no hay usuarios, agrega un mensaje al StringBuilder
-            builder.append("There are no id's");
-        } else {
-            // Si hay registros, itera sobre cada uno de ellos
-            while (cursor.moveToNext()) {
-                // Obtiene la contraseña del usuario desde la tercera columna (índice 2)
-                String token  = cursor.getString(0);
-                builder.append(token);
+        try {
+            Cursor cursor = db.rawQuery("SELECT token FROM users WHERE id = ? LIMIT 1", new String[]{String.valueOf(id)});
+            Log.d("Debug", "SELECT token FROM users WHERE id = " + id);
+
+            if (cursor.moveToFirst()) {
+                token = cursor.getString(0);
+                Log.d("Debug", "token from select = " + token);
+                // Verifica si el token está vacío
+                if (token == null || token.trim().isEmpty()) {
+                    Log.d("Debug", "Token is empty for user ID: " + id);
+                    return null; // O puedes devolver una cadena específica
+                }
             }
+
+            cursor.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            db.close();
         }
-        // Cierra el cursor para liberar recursos
-        cursor.close();
-        db.close();
-        return builder.toString();
+
+        return token; // Devuelve null si no se encontró un token
     }
+
 
 
 
@@ -276,6 +285,50 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return mdContents;
     }
 
+    public String getAllUsers() {
+        SQLiteDatabase db = this.getReadableDatabase();
+        StringBuilder builder = new StringBuilder();
+
+        Cursor cursor = null;
+        try {
+            // Ejecutar la consulta para obtener todos los usuarios
+            cursor = db.rawQuery("SELECT * FROM users", null);
+
+            // Comprobar si hay resultados
+            if (cursor.moveToFirst()) {
+                do {
+                    // Obtener los valores de cada columna usando getColumnIndexOrThrow
+                    int id = cursor.getInt(cursor.getColumnIndexOrThrow("id"));
+                    String name = cursor.getString(cursor.getColumnIndexOrThrow("name"));
+                    String password = cursor.getString(cursor.getColumnIndexOrThrow("password"));
+                    String token = cursor.getString(cursor.getColumnIndexOrThrow("token"));
+
+                    // Agregar cada usuario al StringBuilder
+                    builder.append("ID: ").append(id)
+                            .append(", Name: ").append(name)
+                            .append(", Password: ").append(password)
+                            .append(", Token: ").append(token)
+                            .append("\n");
+                } while (cursor.moveToNext());
+            } else {
+                builder.append("No users found.");
+            }
+
+            // Mostrar el contenido en logcat
+            Log.i("DatabaseContent", builder.toString());
+        } catch (Exception e) {
+            Log.e("DatabaseError", "Error reading database", e);
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
+            db.close();
+        }
+
+        return builder.toString();
+    }
+
+
 
 
 
@@ -309,6 +362,5 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getReadableDatabase();
         return db.rawQuery("SELECT * FROM users WHERE name = ? AND password = ?", new String[]{name, password});
     }
-
 
 }
