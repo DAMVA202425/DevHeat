@@ -1,14 +1,7 @@
-<?xml version="1.0" encoding="utf-8"?>
-<resources>
-    <style name="Theme.DevHeat.Dark" parent="Theme.Material3.DayNight.NoActionBar">
-        <item name="colorPrimary">#121212</item>
-        <item name="colorPrimaryDark">#000000</item>
-        <item name="colorAccent">#BB86FC</item>
-        <item name="android:colorBackground">#121212</item>
-        <item name="colorSurface">#1E1E1E</item>
-        <item name="colorOnPrimary">#FFFFFF</item>
-        <item name="colorOnBackground">#FFFFFF</item>
-        <item name="colorOnSurface">#FFFFFF</item>
-        <item name="android:fontFamily">@font/cocogoose_pro_light_trial</item>
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- Base application theme. -->
+    <style name="Base.Theme.DevHeat" parent="Theme.Material3.DayNight.NoActionBar">
+        <!-- Customize your dark theme here. -->
+        <!-- <item name="colorPrimary">@color/my_dark_primary</item> -->
     </style>
 </resources>
